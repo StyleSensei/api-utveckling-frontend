@@ -1,9 +1,9 @@
-
-// import MicroModal from 'micromodal'
 const allPlayersTBody = document.querySelector("#allPlayers tbody")
 const searchPlayer = document.getElementById("searchPlayer")
 const btnAdd = document.getElementById("btnAdd")
 const closeDialog = document.getElementById("closeDialog")
+
+
 
 
 function Player(id, name,jersey,team, position){
@@ -24,7 +24,6 @@ async function fetchPlayers(){
     return await((await fetch('http://localhost:3000/api/players')).json())
 }
 let players =  await fetchPlayers()
-console.log(players)
 
 searchPlayer.addEventListener("input", function() {
     const searchFor = searchPlayer.value.toLowerCase() 
@@ -54,9 +53,9 @@ const position = document.getElementById("position")
 let editingPlayer = null
 
 const onClickPlayer = function(event){
-    const htmlElementetSomViHarKlickatPa = event.target
-    console.log(htmlElementetSomViHarKlickatPa.dataset.stefansplayerid)
-    const player = players.find(p=> p.id === htmlElementetSomViHarKlickatPa.dataset.stefansplayerid)
+    const clickedElement = event.target
+    console.log(clickedElement.dataset.playerid)
+    const player = players.find(player => player.id == clickedElement.dataset.playerid)
     playerName.value = player.name
     jersey.value = player.jersey
     position.value = player.position
@@ -70,16 +69,16 @@ closeDialog.addEventListener("click",async (ev)=>{
     ev.preventDefault()
     let url = ""
     let method = ""
-    console.log(url)
-    var o = {
+    // console.log(url)
+    var player = {
         "name" : playerName.value,
         "jersey" : jersey.value,
         "position": position.value
         }
 
     if(editingPlayer != null){
-        o.id = editingPlayer.id;
-        url =  "http://localhost:3000/api/players/" + o.id
+        player.id = editingPlayer.id;
+        url =  "http://localhost:3000/api/players/" + player.id
         method = "PUT"
     }else{
         url =  "http://localhost:3000/api/players"
@@ -92,12 +91,13 @@ closeDialog.addEventListener("click",async (ev)=>{
             'Content-Type': 'application/json'
           },
           method: method,
-          body: JSON.stringify(o)                
+          body: JSON.stringify(player)                
     })
 
-    let json = await response.json()
+    // let json = await response.json()
 
     players = await fetchPlayers()
+    console.log(players)
     updateTable()
     MicroModal.close('modal-1');
 })
@@ -133,7 +133,7 @@ const updateTable = function(){
         let td = document.createElement("td")
         let btn = document.createElement("button")
         btn.textContent = "EDIT"
-        btn.dataset.stefansplayerid=players[i].id
+        btn.dataset.playerid=players[i].id
         td.appendChild(btn)
         tr.appendChild(td)
 
@@ -154,7 +154,7 @@ const updateTable = function(){
     //    injection
     // for(let i = 0; i < players.length;i++) { // hrmmm you do foreach if you'd like, much nicer! 
     //                                         // I will show you in two weeks
-    //                                         //  or for p of players     
+    //                                         //  or for player of players     
     //     let trText = `<tr><th scope="row">${players[i].name}</th><td>${players[i].jersey}</td><td>${players[i].position}</td><td>${players[i].team}</td></tr>`
     //     allPlayersTBody.innerHTML += trText
     // }
