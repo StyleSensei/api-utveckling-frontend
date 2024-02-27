@@ -9,7 +9,7 @@ let currentSortCol = '';
 let currentSortOrder = '';
 let currentQ = '';
 let currentPageNo = 1;
-let currentPageSize = 20;
+let currentPageSize = 4;
 
 Object.values(allSortLinks).forEach((link) => {
   link.addEventListener('click', () => {
@@ -32,8 +32,9 @@ function debounce(cb, delay = 250) {
 
 const updateQuery = debounce((query) => {
   currentQ = query;
+  currentPageNo = 1
   refresh();
-}, 1000);
+}, 500);
 
 function createPager(count, pageNo, currentPageSize) {
   pager.innerHTML = '';
