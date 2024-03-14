@@ -570,7 +570,14 @@
   background-color: #00449e;
   color: #fff;
 }
-
+.modal__section{
+  position: relative;
+}
+.modal__error{
+  position: absolute;
+  bottom: -.5rem;
+  left: 0;
+}
 
 
 /**************************\
