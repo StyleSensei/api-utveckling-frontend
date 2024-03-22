@@ -437,6 +437,7 @@ li.page-item.active > a.page-link {
 
 th {
   border-bottom: none;
+  min-width: 145px;
 }
 
 #btnAdd {
