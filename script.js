@@ -1,21 +1,19 @@
 // import { createPager } from './createPager.js';
-import {
-  createResponseMessage404,
-  createResponseMessageModal,
-  noPlayersFound,
-} from './messages.js';
+import { createResponseMessageModal } from './messages.js';
+import { refresh } from './refresh.js';
+import { searchPlayerOnInput } from './searchPlayerOnInput.js';
 import './validators.js';
 import { checkIfEmpty } from './validators.js';
 
-const allPlayersTBody = document.querySelector('#allPlayers tbody');
-const searchPlayer = document.getElementById('searchPlayer');
+export const allPlayersTBody = document.querySelector('#allPlayers tbody');
+export const searchPlayer = document.getElementById('searchPlayer');
 const searchForm = document.getElementById('search-form');
 const allSortLinks = document.getElementsByClassName('bi');
 const playerName = document.getElementById('playerName');
 const jersey = document.getElementById('jersey');
 const position = document.getElementById('position');
 const team = document.getElementById('team');
-const overlay = document.createElement('div');
+export const overlay = document.createElement('div');
 
 const btnAdd = document.getElementById('btnAdd');
 const savePlayer = document.getElementById('save');
@@ -30,11 +28,11 @@ responseMessageContainer.appendChild(responseMessage);
 document.body.appendChild(responseMessageContainer);
 
 let editingPlayer = null;
-let currentSortCol = '';
-let currentSortOrder = '';
-let currentQ = '';
-let currentPageSize = 6;
-let currentPageNo = 1;
+export let currentSortCol = '';
+export let currentSortOrder = '';
+export let currentQ = '';
+export let currentPageSize = 6;
+export let currentPageNo = 1;
 
 Object.values(allSortLinks).forEach((link) => {
   link.addEventListener('click', () => {
@@ -43,6 +41,12 @@ Object.values(allSortLinks).forEach((link) => {
     refresh();
   });
 });
+
+export function createTd(data) {
+  let element = document.createElement('td');
+  element.innerText = data;
+  return element;
+}
 
 function debounce(cb, delay = 250) {
   let timeout;
@@ -54,7 +58,7 @@ function debounce(cb, delay = 250) {
     }, delay);
   };
 }
-function createPager(count, pageNo, currentPageSize) {
+export function createPager(count, pageNo, currentPageSize) {
   const pager = document.getElementById('pager');
 
   pager.innerHTML = '';
@@ -79,49 +83,30 @@ function createPager(count, pageNo, currentPageSize) {
     pager.appendChild(li);
   }
 }
+async function fetchPlayers() {
+  return await (await fetch('http://localhost:3000/api/players')).json();
+}
+export let players = await fetchPlayers();
 
-const updateQuery = debounce((query) => {
+export const updateQuery = debounce((query) => {
   currentQ = query;
   currentPageNo = 1;
   refresh();
   overlay.style.display = 'none';
 }, 500);
 
-searchPlayer.addEventListener('input', (e) => {
-  overlay.style.display = 'flex';
-  clearTimeout();
-
-  updateQuery(e.target.value);
-});
 searchForm.addEventListener('submit', (e) => {
   e.preventDefault();
   searchPlayer.blur();
 });
-searchPlayer.addEventListener('focus', () => {
-  overlay.style.display = 'flex';
-});
-searchPlayer.addEventListener('blur', () => {
-  overlay.style.display = 'none';
-});
 
-async function fetchPlayers() {
-  return await (await fetch('http://localhost:3000/api/players')).json();
-}
-let players = await fetchPlayers();
+searchPlayer.addEventListener('focus', () => (overlay.style.display = 'flex'));
 
-searchPlayer.addEventListener('input', function () {
-  const searchFor = searchPlayer.value.toLowerCase();
-  for (let i = 0; i < players.length; i++) {
-    if (players[i].matches(searchFor)) {
-      players[i].visible = true;
-    } else {
-      players[i].visible = false;
-    }
-  }
-});
+searchPlayer.addEventListener('blur', () => (overlay.style.display = 'none'));
 
+searchPlayer.addEventListener('input', (e) => searchPlayerOnInput(e));
 
-const onClickPlayer = function (event) {
+export const onClickPlayer = function (event) {
   const clickedElement = event.target;
   const player = players.result.find(
     (player) => player.id == clickedElement.dataset.playerid
@@ -200,66 +185,6 @@ btnAdd.addEventListener('click', () => {
   MicroModal.show('modal-1');
   checkIfEmpty();
 });
-
-function createTd(data) {
-  let element = document.createElement('td');
-  element.innerText = data;
-  return element;
-}
-
-export async function refresh() {
-  let offset = (currentPageNo - 1) * currentPageSize;
-  let url =
-    'http://localhost:3000/api/players?sortCol=' +
-    currentSortCol +
-    '&sortOrder=' +
-    currentSortOrder +
-    '&q=' +
-    currentQ +
-    '&limit=' +
-    currentPageSize +
-    '&offset=' +
-    offset;
-
-  const response = await fetch(url, {
-    headers: {
-      Accept: 'application/json',
-    },
-  });
-  noPlayersFound.innerHTML = '';
-  noPlayersFound.style.display = 'none';
-
-  if (response.status == 404) {
-    allPlayersTBody.innerHTML = '';
-    createPager(response.total, currentPageNo, currentPageSize);
-    createResponseMessage404();
-  } else {
-    const players = await response.json();
-
-    allPlayersTBody.innerHTML = '';
-
-    players.result.forEach((player) => {
-      const tr = document.createElement('tr');
-      tr.appendChild(createTd(player.name));
-      tr.appendChild(createTd(player.jersey));
-      tr.appendChild(createTd(player.position));
-      tr.appendChild(createTd(player.team));
-
-      const td = document.createElement('td');
-      const btn = document.createElement('button');
-      btn.classList.add('btn', 'btn-secondary', 'btn-sm');
-      btn.textContent = 'EDIT';
-      btn.dataset.playerid = player.id;
-      td.appendChild(btn);
-      tr.appendChild(td);
-
-      btn.addEventListener('click', onClickPlayer);
-
-      allPlayersTBody.appendChild(tr);
-    });
-    createPager(players.total, currentPageNo, currentPageSize);
-  }
-}
 
 await refresh();
 
