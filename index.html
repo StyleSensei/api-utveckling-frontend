@@ -1,11 +1,10 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
   <head>
-    <!-- lista med barn -->
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Stefans Exempel</title>
-    <link rel="shortcut icon" href="https://picocss.com/favicon.ico" />
+    <title>Hockey players</title>
+    <link rel="shortcut icon" href="hockey-stick-50.png" />
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/@picocss/pico@1/css/pico.min.css"
@@ -24,23 +23,24 @@
     <!-- Header -->
     <header class="container">
       <hgroup>
-        <h1>My players</h1>
-        <h2>A great database</h2>
+        <h1>Hockey players</h1>
+        <h2>A database. It is what it is.</h2>
       </hgroup>
     </header>
     <!-- ./ Header -->
 
     <!-- Main -->
     <main class="container">
-      <section id="test2">
-        <form>
+      <section id="form-wrapper">
+        <form id="search-form">
           <!-- Search -->
           <label for="search">Search</label>
           <input
             type="search"
             id="searchPlayer"
             name="search"
-            placeholder="Search"
+            placeholder="Search for players by name, position, or team."
+            autofocus
           />
         </form>
 
@@ -98,7 +98,6 @@
             </tr>
           </thead>
           <tbody>
-            <!-- <tr data-id="1"><th scope="row">Peter Forsberg</th><td>21</td><td>Forward</td><td>Colorado</td></tr><tr data-id="2"><th scope="row">Mats Sundin</th><td>13</td><td>Forward</td><td>Toronto</td></tr><tr data-id="3"><th scope="row">Niklas Lidström</th><td>5</td><td>Defence</td><td>Detroit</td></tr><tr data-id="4"><th scope="row">Mikko Rantanen</th><td>96</td><td>Forward</td><td>Colorado</td></tr><tr data-id="5"><th scope="row">Jack Johnson</th><td>3</td><td>Defence</td><td>Colorado</td></tr> -->
           </tbody>
         </table>
         <nav aria-label="...">
@@ -109,26 +108,15 @@
             </li>
             <li class="page-item"><a class="page-link" href="#">3</a></li>
           </ul>
+          <button id="btnAdd">Add new player</button>
         </nav>
         <br />
 
-        <hr />
-        <button id="btnAdd">Add new player</button>
+        <hr/>
       </section>
     </main>
     <!-- ./ Main -->
 
-    <!-- Footer -->
-    <footer class="container">
-      <small
-        >Built with <a href="https://picocss.com">Pico</a> •
-        <a
-          href="https://github.com/picocss/examples/blob/master/v1-basic-template/"
-          >Source code</a
-        ></small
-      >
-    </footer>
-    <!-- ./ Footer -->
 
     <div class="modal micromodal-slide" id="modal-1" aria-hidden="true">
       <form id="editForm">
@@ -197,7 +185,7 @@
 
             <footer class="modal__footer">
               <button type="submit" id="save">Save</button>
-              <button
+              <button class="btn-secondary" type="button" id="cancel"
                 data-micromodal-close
                 aria-label="Close this dialog window"
               >
